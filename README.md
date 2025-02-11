@@ -68,7 +68,7 @@ Este proyecto es una aplicación web desarrollada con React en el frontend y Spr
    ```sh
    cp -r dist/* ../backend/src/main/resources/static/
    ```
-5. Iniciar el backend y acceder a la aplicación en `http://localhost:8080/`.
+5. Iniciar el backend y acceder a la aplicación en `http://localhost:8282/`.
 
 ## Uso
 - Acceder a `http://localhost:8282/` para ver la aplicación.
