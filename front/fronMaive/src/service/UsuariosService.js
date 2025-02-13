@@ -19,6 +19,23 @@ import axios from "axios"
             return error.response.data;
         });
     }
+
+    guardarUsuario(data){
+        return axios.post(`${US_BASE_API_URL}/save`, data)
+        .then(response => response.data)
+        .catch(error =>{
+            return error.response.data;
+        });
+    }
+
+    eliminarUsuario(id){
+        return axios.delete(`${US_BASE_API_URL}/${id}`)
+        .then(response => response.data)
+        .catch(error => {
+            console.error("Error:", error.response)
+            return error.response.data;
+        });
+    }
  }
 
  export default new UsuariosService();

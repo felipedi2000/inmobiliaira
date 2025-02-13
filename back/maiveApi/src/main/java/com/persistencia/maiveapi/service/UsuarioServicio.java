@@ -23,6 +23,21 @@ public class UsuarioServicio {
         return usuariosRepositorio.findAll();
     }
 
+    public String agregarUsuario(Usuarios usuario) {
+
+        Optional<Usuarios> usuarioConMismaCedula = usuariosRepositorio.findByCedula(usuario.getCedula());
+
+
+        if (usuarioConMismaCedula.isPresent()) {
+            return "Error Cédula ya registrada";
+        }
+
+        usuariosRepositorio.save(usuario);
+
+        return "Usuario registrado";
+    }
+
+
     public String actualizarUsuario(Usuarios usuario) {
         Optional<Usuarios> usuarioOldOptional = usuariosRepositorio.findById(usuario.getId());
 
@@ -52,6 +67,19 @@ public class UsuarioServicio {
         } else {
             return "Usuario no encontrado";
         }
+    }
+
+
+    public String eliminarUsuario(long id) {
+        Usuarios user = usuariosRepositorio.findById(id).orElse(null);
+        if(user == null) {
+            return "no encontrado";
+        }
+        if(!user.getArrendamentosInquilino().isEmpty() || !user.getArrendamentosPropietario().isEmpty()) {
+            return "usuario con arriendos acivos";
+        }
+        usuariosRepositorio.delete(user);
+        return "eliminado";
     }
 
 }

@@ -4,8 +4,9 @@ import PropTypes from "prop-types";
 import { useNavigate } from "react-router-dom";
 import { Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Button } from "@mui/material";
 import ArriendosService from "../service/ArriendosService";
+import UsuariosService from "../service/UsuariosService";
 
-const BorrarBoton = ({ id, fetchData }) => {
+const BorrarBoton = ({ id, fetchData, tipo }) => {
   const [open, setOpen] = useState(false);
 
   const handleOpen = () => setOpen(true);
@@ -13,10 +14,24 @@ const BorrarBoton = ({ id, fetchData }) => {
 
   const handleConfirmDelete = async () => {
     try{
-      const response = await  ArriendosService.eliminarArriendo(id);
-      if (response === "Arriendo y usuarios eliminados con éxito."){
-        setOpen(false);
-        await fetchData();
+      if(tipo === "arriendo"){
+        const response = await  ArriendosService.eliminarArriendo(id);
+        if (response === "Arriendo y usuarios eliminados con éxito."){
+          setOpen(false);
+          await fetchData();
+        }
+      }
+      if(tipo== "usuario"){
+        const response = await  UsuariosService.eliminarUsuario(id);
+        if(response === "eliminado"){
+          setOpen(false);
+          await fetchData();
+        }
+        if(response === "usuario con arriendos acivos"){
+          window.alert("No se puede borrar usuario tiene arriendos activos");
+          setOpen(false);
+          await fetchData();
+        }
       }
     } catch(error){
       console.error(error);
@@ -77,7 +92,7 @@ const BorrarBoton = ({ id, fetchData }) => {
         <DialogTitle>Confirmación</DialogTitle>
         <DialogContent>
           <DialogContentText>
-            ¿Está seguro que desea borrar el arriendo?
+            ¿Está seguro que desea borrar el {tipo}?
           </DialogContentText>
         </DialogContent>
         <DialogActions>
@@ -153,7 +168,8 @@ const StyledWrapper = styled.div`
 
 BorrarBoton.propTypes = {
   id: PropTypes.number.isRequired,
-  fetchData: PropTypes.func.isRequired
+  fetchData: PropTypes.func.isRequired,
+  tipo: PropTypes.string.isRequired
 };
 
 export default BorrarBoton;

@@ -158,7 +158,7 @@ export default function Arriendos() {
                       <EditarBoton ruta="/editarArriendos" data={item} />
                     </td>
                     <td className="colBotones">
-                      <BorrarBoton id={item.idArriendo} fetchData={fetchData}/>
+                      <BorrarBoton id={item.idArriendo} fetchData={fetchData} tipo="arriendo"/>
                     </td>
                   </tr>
                 ))

@@ -33,7 +33,6 @@ public class ArriendosServicio {
     public String guardarArriendosCompleto(ArriendosDTO arriendosDTO) {
         try {
 
-
             // Crear un nuevo objeto de Arriendo
             Arriendos arriendosNew = new Arriendos();
             arriendosNew.setDireccion(arriendosDTO.getDireccion());
@@ -46,51 +45,19 @@ public class ArriendosServicio {
             arriendosNew.setCuentaLuz(arriendosDTO.getCuentaLuz());
             arriendosNew.setCuentaGas(arriendosDTO.getCuentaGas());
 
-            // Buscar y actualizar o crear el usuario inquilino
-            Optional<Usuarios> usuarioInquilinoExistente = usuariosRepositorio.findByCedula(arriendosDTO.getCedulaInquilino());
-            Usuarios usuarioInquilino = new Usuarios();
+            // Buscar
+            Optional<Usuarios> usuarioInquilino = usuariosRepositorio.findByCedula(arriendosDTO.getCedulaInquilino());
 
-            if (usuarioInquilinoExistente.isPresent()) {
-                // Si el inquilino ya existe, lo obtenemos y actualizamos sus datos
-                usuarioInquilino = usuarioInquilinoExistente.get();
-                usuarioInquilino.setNombre(arriendosDTO.getNombreUsuarioInquilino());
-                usuarioInquilino.setTelefono(arriendosDTO.getTelefonoInquilino());
-                usuarioInquilino = usuariosRepositorio.save(usuarioInquilino);
-            } else {
-                // Si el inquilino no existe, se crea uno nuevo
-                usuarioInquilino = new Usuarios();
-                usuarioInquilino.setNombre(arriendosDTO.getNombreUsuarioInquilino());
-                usuarioInquilino.setTelefono(arriendosDTO.getTelefonoInquilino());
-                usuarioInquilino.setCedula(arriendosDTO.getCedulaInquilino());
-                usuarioInquilino.setTipoUsuario("inquilino");
-                usuarioInquilino = usuariosRepositorio.save(usuarioInquilino);
+            if(usuarioInquilino.isPresent()) {
+                arriendosNew.setUsuarioInquilino(usuarioInquilino.get());
             }
 
-            // Buscar y actualizar o crear el usuario propietario
-            Optional<Usuarios> usuarioPropietarioExistente = usuariosRepositorio.findByCedula(arriendosDTO.getCedulaPropietario());
-            Usuarios usuarioPropietario = new Usuarios();
+            Optional<Usuarios> usuarioPropietario = usuariosRepositorio.findByCedula(arriendosDTO.getCedulaPropietario());
 
-            if (usuarioPropietarioExistente.isPresent()) {
-                // Si el propietario ya existe, lo obtenemos y actualizamos sus datos
-                usuarioPropietario = usuarioPropietarioExistente.get();
-                usuarioPropietario.setNombre(arriendosDTO.getNombreUsuarioPropietario());
-                usuarioPropietario.setTelefono(arriendosDTO.getTelefonoPropietario());
-                usuarioPropietario = usuariosRepositorio.save(usuarioPropietario);
-            } else {
-                // Si el propietario no existe, se crea uno nuevo
-                usuarioPropietario = new Usuarios();
-                usuarioPropietario.setNombre(arriendosDTO.getNombreUsuarioPropietario());
-                usuarioPropietario.setTelefono(arriendosDTO.getTelefonoPropietario());
-                usuarioPropietario.setCedula(arriendosDTO.getCedulaPropietario());
-                usuarioPropietario.setTipoUsuario("propietario");
-                usuarioPropietario = usuariosRepositorio.save(usuarioPropietario);
+            if(usuarioPropietario.isPresent()) {
+                arriendosNew.setUsuarioPropietario(usuarioPropietario.get());
             }
 
-            // Asignar los usuarios al arriendo
-            arriendosNew.setUsuarioPropietario(usuarioPropietario);
-            arriendosNew.setUsuarioInquilino(usuarioInquilino);
-
-            // Guardar el arriendo en la base de datos
             arriendosNew = arriendoRepositorio.save(arriendosNew);
 
             // Crear y guardar el documento del arriendo

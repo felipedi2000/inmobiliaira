@@ -4,6 +4,8 @@ import NavBar from "../components/NavBar";
 import styled from "styled-components";
 import EditarBoton2 from "../components/EditarBoton2";
 import UsuariosService from "../service/UsuariosService";
+import CreateBoton from "../components/CreateBoton";
+import BorrarBoton from "../components/BorrarBoton";
 
 const StyledWrapper = styled.div`
   .table-wrapper {
@@ -117,6 +119,7 @@ export default function Usarios() {
                 <th>Telefono</th>
                 <th>Rol</th>
                 <th>Editar</th>
+                <th>Borrar</th>
               </tr>
             </thead>
             <tbody>
@@ -131,17 +134,22 @@ export default function Usarios() {
                     <td>
                       <EditarBoton2 item={item} fetchData={fetchData} />
                     </td>
+                    <td>
+                      <BorrarBoton id={item.id} fetchData={fetchData} tipo="usuario"/>
+                    </td>
                   </tr>
                 ))
               ) : (
                 <tr>
-                  <td colSpan="6">No hay usuarios disponibles</td>
+                  <td colSpan="7">No hay usuarios disponibles</td>
                 </tr>
               )}
             </tbody>
           </table>
         </div>
-      </Box>
+        <br></br>
+        <CreateBoton fetchData={fetchData}/>
+      </Box>      
     </StyledWrapper>
   );
 }

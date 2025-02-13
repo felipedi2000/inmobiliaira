@@ -1,11 +1,12 @@
 import { Box } from "@mui/material";
-import {useState } from "react";
-import { Button, TextField, Typography, Autocomplete, Snackbar, Alert } from "@mui/material";
+import {useEffect, useState } from "react";
+import { Button, TextField, Typography, Autocomplete, Snackbar, Alert, MenuItem, Select, FormControl, InputLabel } from "@mui/material";
 import React from "react";
 import NavBar from "../components/NavBar";
 import barriosDuitama from "../data/barriosDuitama";
 import ArriendosService from "../service/ArriendosService";
 import { useNavigate } from "react-router-dom";
+import UsuariosService from "../service/UsuariosService";
 
 const tiposInmueble = [
   { value: "Casa" },
@@ -32,13 +33,13 @@ export default function AgregarArriendo() {
   const [infoExtra, setInfoExtra] = useState("");
   const [contratoURL, setContratoURL] = useState("");
   const [tipoInmueble, setTipoInmueble] = useState("");
-  const [propietarioNombre, setPropietarioNombre] = useState("");
-  const [propietarioTelefono, setPropietarioTelefono] = useState("");
-  const [propietarioCedula, setPropietarioCedula] = useState("");
-  const [arrendatarioNombre, setArrendatarioNombre] = useState("");
-  const [arrendatarioTelefono, setArrendatarioTelefono] = useState("");
-  const [arrendatarioCedula, setArrendatarioCedula] = useState("");
+	const [propietario, setPropietario] = useState("");
+	const [inquilino, setInquilino] = useState("");
+
+	const[listaUsers, setListaUsers] = useState([]);
+	
   const [barrio, setBarrio] = useState("");
+
 
   const [showMessage, setShowMessage] = useState(false);
 
@@ -46,7 +47,7 @@ export default function AgregarArriendo() {
 
   const summbitForm = async (e) => {
     e.preventDefault();
-    // Handle form submission here
+
     if (
       !direccion ||
       !barrio ||
@@ -57,13 +58,9 @@ export default function AgregarArriendo() {
       !facLuz ||
       !facAgua ||
       !contratoURL ||
-      !propietarioNombre ||
-      !propietarioTelefono ||
-      !propietarioCedula ||
-      !arrendatarioNombre ||
-      !arrendatarioTelefono ||
-      !arrendatarioCedula ||
-      !infoExtra
+      !infoExtra ||
+			!propietario ||
+			!inquilino
     ) {
       setShowMessage(true);
       setSeverity("warning");
@@ -91,15 +88,12 @@ export default function AgregarArriendo() {
       fechaIni: fechaIn,
       fechaFin: fechaFin,
       informacionExtra: infoExtra,
-      nombreUsuarioInquilino: arrendatarioNombre,
-      cedulaInquilino: arrendatarioCedula,
-      telefonoInquilino: arrendatarioTelefono ,
-      nombreUsuarioPropietario: propietarioNombre,
-      cedulaPropietario: propietarioCedula,
-      telefonoPropietario: propietarioTelefono,
+      cedulaInquilino: inquilino,
+      cedulaPropietario: propietario,
       tipoDocumento: "PDF",
       documento: contratoURL
     };
+		console.log(jsonArriendo);
     const response = await ArriendosService.guardarArriendo(jsonArriendo);
     if(response === "Guardado correctamente"){
       setShowMessage(true);
@@ -114,12 +108,6 @@ export default function AgregarArriendo() {
       setInfoExtra("");
       setContratoURL("");
       setTipoInmueble("");
-      setPropietarioNombre("");
-      setPropietarioTelefono("");
-      setPropietarioCedula("");
-      setArrendatarioNombre("");
-      setArrendatarioTelefono("");
-      setArrendatarioCedula("");
       setBarrio("");
       setTimeout(()=>{
         setShowMessage(false);
@@ -131,6 +119,15 @@ export default function AgregarArriendo() {
   const handleClose = () => {
     setShowMessage(false);
   };
+
+	const fetchData = async () => {
+		const jsonIn = await UsuariosService.listarUsuarios();
+		setListaUsers(jsonIn);
+	};
+
+	useEffect(() => {
+		fetchData();
+	}, []);
 
   const styles = {
     boxPrincipal: {
@@ -214,9 +211,9 @@ export default function AgregarArriendo() {
                 type="date"
                 variant="outlined"
                 slotProps={{
-                  inputLabel:{
-                    shrink: true
-                  }
+                  inputLabel: {
+                    shrink: true,
+                  },
                 }}
               />
               <TextField
@@ -228,9 +225,9 @@ export default function AgregarArriendo() {
                 type="date"
                 variant="outlined"
                 slotProps={{
-                  inputLabel:{
-                    shrink: true
-                  }
+                  inputLabel: {
+                    shrink: true,
+                  },
                 }}
               />
             </div>
@@ -290,75 +287,55 @@ export default function AgregarArriendo() {
           </div>
           <div className="w-full flex ">
             <Typography variant="h6" sx={{ marginTop: 1, marginBottom: 1.5 }}>
-              Datos propietario
-            </Typography>
-            <Typography
-              variant="h6"
-              sx={{ marginTop: 1, marginBottom: 1.5, marginLeft: 57 }}
-            >
-              Datos Inquilino
+              Propietario e inquilino
             </Typography>
           </div>
-          <div className="grow flex">
-            <div className="flex gap-[20px]">
-              <TextField
-                size="small"
-                label="Nombre"
-                value={propietarioNombre}
-                onChange={(e) => setPropietarioNombre(e.target.value)}
-                sx={{ width: "15%" }}
-                type="text"
-                variant="outlined"
-              />
-              <TextField
-                size="small"
-                label="Celular"
-                value={propietarioTelefono}
-                onChange={(e) => setPropietarioTelefono(e.target.value)}
-                sx={{ width: "15%" }}
-                type="text"
-                variant="outlined"
-              />
-              <TextField
-                size="small"
-                label="Cedula"
-                value={propietarioCedula}
-                onChange={(e) => setPropietarioCedula(e.target.value)}
-                sx={{ width: "15%" }}
-                type="text"
-                variant="outlined"
-              />
-
-              <TextField
-                size="small"
-                label="Nombre"
-                value={arrendatarioNombre}
-                onChange={(e) => setArrendatarioNombre(e.target.value)}
-                sx={{ width: "15%" }}
-                type="text"
-                variant="outlined"
-              />
-              <TextField
-                size="small"
-                label="Celular"
-                value={arrendatarioTelefono}
-                onChange={(e) => setArrendatarioTelefono(e.target.value)}
-                sx={{ width: "15%" }}
-                type="text"
-                variant="outlined"
-              />
-              <TextField
-                size="small"
-                label="Cedula"
-                value={arrendatarioCedula}
-                onChange={(e) => setArrendatarioCedula(e.target.value)}
-                sx={{ width: "15%" }}
-                type="text"
-                variant="outlined"
-              />
-            </div>
+          <div className="gow flex">
+            <FormControl sx={{ m: 1, minWidth: 320 }} size="small">
+              <InputLabel id="demo-select-small-label">Propietario</InputLabel>
+              <Select
+                labelId="demo-select-small-label"
+                id="demo-select-small"
+                value={propietario}
+                label="Propietario"
+								onChange={(e) => setPropietario(e.target.value)}
+              >
+                <MenuItem value="">
+                  <em>None</em>
+                </MenuItem>
+                {listaUsers
+									.filter((item) => item.tipoUsuario == "propietario")
+									.map((usuario)=>(
+										<MenuItem key={usuario.id} value={usuario.cedula}>
+											{`${usuario.nombre}, Cédula: ${usuario.cedula}, Teléfono: ${usuario.telefono}`}
+										</MenuItem>
+									))
+								}
+              </Select>
+            </FormControl>
+						<FormControl sx={{ m: 1, minWidth: 320 }} size="small">
+              <InputLabel id="inquilino-label">Inquilino</InputLabel>
+              <Select
+                labelId="inquilino-label"
+                id="inquilino-select"
+                value={inquilino}
+                label="Inquilino"
+								onChange={(e) => setInquilino(e.target.value)}
+              >
+                <MenuItem value="">
+                  <em>None</em>
+                </MenuItem>
+								{listaUsers
+									.filter((item) => item.tipoUsuario == "inquilino")
+									.map((usuario)=>(
+										<MenuItem key={usuario.id} value={usuario.cedula}>
+											{`${usuario.nombre}, Cédula: ${usuario.cedula}, Teléfono: ${usuario.telefono}`}
+										</MenuItem>
+									))
+								}
+              </Select>
+            </FormControl>
           </div>
-
           <Button
             type="submit"
             variant="contained"
