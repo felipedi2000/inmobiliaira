@@ -1,6 +1,17 @@
 import { Box } from "@mui/material";
-import {useEffect, useState } from "react";
-import { Button, TextField, Typography, Autocomplete, Snackbar, Alert, MenuItem, Select, FormControl, InputLabel } from "@mui/material";
+import { useEffect, useState } from "react";
+import {
+  Button,
+  TextField,
+  Typography,
+  Autocomplete,
+  Snackbar,
+  Alert,
+  MenuItem,
+  Select,
+  FormControl,
+  InputLabel,
+} from "@mui/material";
 import React from "react";
 import NavBar from "../components/NavBar";
 import barriosDuitama from "../data/barriosDuitama";
@@ -16,12 +27,11 @@ const tiposInmueble = [
   { value: "Bodega" },
   { value: "Finca" },
   { value: "Piso" },
-  {value: "Garaje"},
-  {value: "Lote"}
+  { value: "Garaje" },
+  { value: "Lote" },
 ];
 
 export default function AgregarArriendo() {
-
   const [direccion, setDireccion] = useState("");
   const [severity, setSeverity] = useState("");
   const [textAlert, setTextAlert] = useState("");
@@ -33,13 +43,12 @@ export default function AgregarArriendo() {
   const [infoExtra, setInfoExtra] = useState("");
   const [contratoURL, setContratoURL] = useState("");
   const [tipoInmueble, setTipoInmueble] = useState("");
-	const [propietario, setPropietario] = useState("");
-	const [inquilino, setInquilino] = useState("");
+  const [propietario, setPropietario] = useState("");
+  const [inquilino, setInquilino] = useState("");
 
-	const[listaUsers, setListaUsers] = useState([]);
-	
+  const [listaUsers, setListaUsers] = useState([]);
+
   const [barrio, setBarrio] = useState("");
-
 
   const [showMessage, setShowMessage] = useState(false);
 
@@ -59,8 +68,8 @@ export default function AgregarArriendo() {
       !facAgua ||
       !contratoURL ||
       !infoExtra ||
-			!propietario ||
-			!inquilino
+      !propietario ||
+      !inquilino
     ) {
       setShowMessage(true);
       setSeverity("warning");
@@ -71,14 +80,16 @@ export default function AgregarArriendo() {
     const fechaInicial = new Date(fechaIn);
     const fechaFinal = new Date(fechaFin);
 
-    if(fechaInicial > fechaFinal){
+    if (fechaInicial > fechaFinal) {
       setShowMessage(true);
       setSeverity("error");
-      setTextAlert("La fecha de inicio no puede ser posterior a la fecha de fin");
+      setTextAlert(
+        "La fecha de inicio no puede ser posterior a la fecha de fin"
+      );
       return;
     }
 
-    const jsonArriendo={
+    const jsonArriendo = {
       direccion: direccion,
       tipoInmueble: tipoInmueble.value,
       barrio: barrio.value,
@@ -91,11 +102,11 @@ export default function AgregarArriendo() {
       cedulaInquilino: inquilino,
       cedulaPropietario: propietario,
       tipoDocumento: "PDF",
-      documento: contratoURL
+      documento: contratoURL,
     };
-		console.log(jsonArriendo);
+    console.log(jsonArriendo);
     const response = await ArriendosService.guardarArriendo(jsonArriendo);
-    if(response === "Guardado correctamente"){
+    if (response === "Guardado correctamente") {
       setShowMessage(true);
       setSeverity("success");
       setTextAlert(response);
@@ -109,10 +120,10 @@ export default function AgregarArriendo() {
       setContratoURL("");
       setTipoInmueble("");
       setBarrio("");
-      setTimeout(()=>{
+      setTimeout(() => {
         setShowMessage(false);
         navigate(-1);
-      }, 2000)
+      }, 2000);
     }
   };
 
@@ -120,14 +131,14 @@ export default function AgregarArriendo() {
     setShowMessage(false);
   };
 
-	const fetchData = async () => {
-		const jsonIn = await UsuariosService.listarUsuarios();
-		setListaUsers(jsonIn);
-	};
+  const fetchData = async () => {
+    const jsonIn = await UsuariosService.listarUsuarios();
+    setListaUsers(jsonIn);
+  };
 
-	useEffect(() => {
-		fetchData();
-	}, []);
+  useEffect(() => {
+    fetchData();
+  }, []);
 
   const styles = {
     boxPrincipal: {
@@ -298,41 +309,41 @@ export default function AgregarArriendo() {
                 id="demo-select-small"
                 value={propietario}
                 label="Propietario"
-								onChange={(e) => setPropietario(e.target.value)}
+                onChange={(e) => setPropietario(e.target.value)}
               >
-                <MenuItem value="">
-                  <em>None</em>
-                </MenuItem>
-                {listaUsers
-									.filter((item) => item.tipoUsuario == "propietario")
-									.map((usuario)=>(
-										<MenuItem key={usuario.id} value={usuario.cedula}>
-											{`${usuario.nombre}, Cédula: ${usuario.cedula}, Teléfono: ${usuario.telefono}`}
-										</MenuItem>
-									))
-								}
+                {listaUsers.length === 0 ? (
+                  <MenuItem disabled> No hay usuarios disponibles </MenuItem>
+                ) : (
+                  listaUsers
+                    .filter((item) => item.tipoUsuario === "propietario")
+                    .map((usuario) => (
+                      <MenuItem key={usuario.id} value={usuario.cedula}>
+                        {`${usuario.nombre}, Cédula: ${usuario.cedula}, Teléfono: ${usuario.telefono}`}
+                      </MenuItem>
+                    ))
+                )}
               </Select>
             </FormControl>
-						<FormControl sx={{ m: 1, minWidth: 320 }} size="small">
+            <FormControl sx={{ m: 1, minWidth: 320 }} size="small">
               <InputLabel id="inquilino-label">Inquilino</InputLabel>
               <Select
                 labelId="inquilino-label"
                 id="inquilino-select"
                 value={inquilino}
                 label="Inquilino"
-								onChange={(e) => setInquilino(e.target.value)}
+                onChange={(e) => setInquilino(e.target.value)}
               >
-                <MenuItem value="">
-                  <em>None</em>
-                </MenuItem>
-								{listaUsers
-									.filter((item) => item.tipoUsuario == "inquilino")
-									.map((usuario)=>(
-										<MenuItem key={usuario.id} value={usuario.cedula}>
-											{`${usuario.nombre}, Cédula: ${usuario.cedula}, Teléfono: ${usuario.telefono}`}
-										</MenuItem>
-									))
-								}
+                {listaUsers?.length === 0 ? (
+                  <MenuItem disabled> No hay usuarios disponibles </MenuItem>
+                ) : (
+                  listaUsers
+                    .filter((item) => item.tipoUsuario === "inquilino")
+                    .map((usuario) => (
+                      <MenuItem key={usuario.id} value={usuario.cedula}>
+                        {`${usuario.nombre}, Cédula: ${usuario.cedula}, Teléfono: ${usuario.telefono}`}
+                      </MenuItem>
+                    ))
+                )}
               </Select>
             </FormControl>
           </div>
